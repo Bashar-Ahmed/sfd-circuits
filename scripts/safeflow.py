@@ -82,16 +82,26 @@ def project_to_flow(dag: FlowDAG, target: Optional[np.ndarray] = None,
     E = len(dag.edges)
 
     internal = [i for i in range(len(dag.nodes)) if i != dag.source and i != dag.sink]
-    # incidence over internal nodes: +1 in-edge, -1 out-edge  (A f = 0)
-    A = np.zeros((len(internal), E))
+    n_int = len(internal)
+
+    # Build sparse incidence matrix: +1 in-edge, -1 out-edge  (A f = 0)
+    from scipy.sparse import csr_matrix
+    A_rows, A_cols, A_data = [], [], []
     for r, v in enumerate(internal):
         for ei in dag.in_edges[v]:
-            A[r, ei] += 1.0
+            A_rows.append(r); A_cols.append(ei); A_data.append(1.0)
         for ei in dag.out_edges[v]:
-            A[r, ei] -= 1.0
-    # subspace projector Pmat = I - A^T (A A^T)^+ A
-    AAt_pinv = np.linalg.pinv(A @ A.T)
-    Pmat = np.eye(E) - A.T @ AAt_pinv @ A
+            A_rows.append(r); A_cols.append(ei); A_data.append(-1.0)
+    A_sp = csr_matrix((A_data, (A_rows, A_cols)), shape=(n_int, E))
+
+    # Precompute (A A^T)^+ — small (n_int x n_int), always tractable
+    AAt = (A_sp @ A_sp.T).toarray()
+    AAt_pinv = np.linalg.pinv(AAt)   # dense, but at most n_int^2
+
+    def apply_pmat(vec):
+        """Pmat @ vec = vec - A^T (A A^T)^+ A vec  — never builds Pmat."""
+        AV = A_sp @ vec                       # (n_int,)
+        return vec - A_sp.T @ (AAt_pinv @ AV) # (E,) - (E,)
 
     x = target.copy()
     p = np.zeros(E)
@@ -101,8 +111,8 @@ def project_to_flow(dag: FlowDAG, target: Optional[np.ndarray] = None,
         # project onto nonneg orthant (C1)
         y = np.maximum(x + p, 0.0)
         p = (x + p) - y
-        # project onto conservation subspace (C2)
-        x = Pmat @ (y + q)
+        # project onto conservation subspace (C2) — now O(E) per iteration
+        x = apply_pmat(y + q)
         q = (y + q) - x
         if it % 5 == 0:
             delta = np.linalg.norm(x - last)
@@ -111,7 +121,7 @@ def project_to_flow(dag: FlowDAG, target: Optional[np.ndarray] = None,
                 break
     flow = np.maximum(x, 0.0)          # numerical clean-up (nonneg)
     # residual conservation error after clamp
-    cons_err = float(np.abs(A @ flow).max()) if len(internal) else 0.0
+    cons_err = float(np.abs(A_sp @ flow).max()) if n_int else 0.0
     diag = {
         "iters": it + 1,
         "proj_residual": float(np.linalg.norm(flow - target)),
