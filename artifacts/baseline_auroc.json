@@ -1,0 +1,14 @@
+{
+  "EAP": {
+    "auroc_mib": 0.6894,
+    "auroc_monotone": 0.6894
+  },
+  "EAP-IG-inputs": {
+    "auroc_mib": 0.644,
+    "auroc_monotone": 0.644
+  },
+  "information-flow-routes": {
+    "auroc_mib": 0.4497,
+    "auroc_monotone": 0.4497
+  }
+}

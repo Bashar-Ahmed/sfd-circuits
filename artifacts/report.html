@@ -1,0 +1,460 @@
+<title>Safe Flow Decomposition for Circuit Discovery</title>
+<style>
+  :root {
+    --ground:      #f4f6f6;
+    --surface:     #ffffff;
+    --surface-2:   #eef1f1;
+    --ink:         #131a1d;
+    --ink-2:       #465059;
+    --ink-3:       #7b868d;
+    --hair:        #d9dedd;
+    --hair-2:      #e7ebea;
+    --accent:      #0e6f7e;   /* flow / current teal */
+    --accent-2:    #0b5560;
+    --accent-soft: #d5e9ea;
+    --pos:         #0ca30c;
+    --neg:         #d03b3b;
+    /* chart series (validated blue / aqua / yellow) */
+    --s-raw:   #2a78d6;
+    --s-flow:  #1baf7a;
+    --s-sigma: #eda100;
+    --chart-surface: #ffffff;
+    --grid: #e7ebea;
+    --tip-bg: #131a1d;
+    --tip-ink: #ffffff;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#0f1416; --surface:#171d20; --surface-2:#1e2528; --ink:#eef2f1;
+      --ink-2:#b3bcbf; --ink-3:#7e888c; --hair:#2b3337; --hair-2:#222a2d;
+      --accent:#39b3c2; --accent-2:#63c6d2; --accent-soft:#173c42;
+      --pos:#3fbf5a; --neg:#e66767;
+      --s-raw:#3987e5; --s-flow:#199e70; --s-sigma:#c98500;
+      --chart-surface:#171d20; --grid:#262f33; --tip-bg:#e9edec; --tip-ink:#0f1416;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0f1416; --surface:#171d20; --surface-2:#1e2528; --ink:#eef2f1;
+    --ink-2:#b3bcbf; --ink-3:#7e888c; --hair:#2b3337; --hair-2:#222a2d;
+    --accent:#39b3c2; --accent-2:#63c6d2; --accent-soft:#173c42;
+    --pos:#3fbf5a; --neg:#e66767;
+    --s-raw:#3987e5; --s-flow:#199e70; --s-sigma:#c98500;
+    --chart-surface:#171d20; --grid:#262f33; --tip-bg:#e9edec; --tip-ink:#0f1416;
+  }
+  :root[data-theme="light"] {
+    --ground:#f4f6f6; --surface:#ffffff; --surface-2:#eef1f1; --ink:#131a1d;
+    --ink-2:#465059; --ink-3:#7b868d; --hair:#d9dedd; --hair-2:#e7ebea;
+    --accent:#0e6f7e; --accent-2:#0b5560; --accent-soft:#d5e9ea;
+    --pos:#0ca30c; --neg:#d03b3b;
+    --s-raw:#2a78d6; --s-flow:#1baf7a; --s-sigma:#eda100;
+    --chart-surface:#ffffff; --grid:#e7ebea; --tip-bg:#131a1d; --tip-ink:#ffffff;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    font-size: 18px; line-height: 1.68; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  .sans { font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  .mono { font-family: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace; }
+
+  h1,h2,h3 { font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+             text-wrap: balance; letter-spacing: -0.02em; line-height: 1.12; }
+  a { color: var(--accent); }
+
+  /* header / hero */
+  header.hero { border-bottom: 1px solid var(--hair); background:
+      radial-gradient(120% 90% at 88% -10%, var(--accent-soft) 0%, transparent 55%); }
+  .eyebrow { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-2); font-weight: 700; }
+  .hero h1 { font-size: clamp(30px, 5.4vw, 52px); font-weight: 800; margin: 14px 0 10px; }
+  .hero .sub { font-size: clamp(18px, 2.4vw, 22px); color: var(--ink-2); max-width: 40ch; margin: 0 0 22px; }
+  .hero .meta { display:flex; flex-wrap: wrap; gap: 8px 10px; margin-bottom: 30px; }
+  .chip { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12.5px; font-weight: 600;
+    color: var(--ink-2); background: var(--surface); border: 1px solid var(--hair);
+    border-radius: 999px; padding: 5px 12px; }
+  .chip b { color: var(--accent-2); }
+
+  section { padding: 46px 0; border-bottom: 1px solid var(--hair-2); }
+  .sec-head { display:flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+  .sec-num { font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 800; font-size: 13px;
+    color: var(--accent); border: 1.5px solid var(--accent); border-radius: 7px; padding: 2px 8px; }
+  h2 { font-size: clamp(23px, 3.2vw, 30px); font-weight: 750; margin: 0; }
+  h3 { font-size: 18px; font-weight: 700; margin: 30px 0 6px; color: var(--ink); }
+  p { margin: 14px 0; }
+  .lead { font-size: 20px; color: var(--ink-2); }
+  .measure { max-width: 68ch; }
+  code, .k { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.86em;
+    background: var(--surface-2); border: 1px solid var(--hair-2); border-radius: 5px; padding: 1px 5px; }
+
+  /* finding cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 8px 0 4px; }
+  .card { background: var(--surface); border: 1px solid var(--hair); border-radius: 14px; padding: 18px 18px 16px; }
+  .card .tag { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 11.5px; letter-spacing: .12em;
+    text-transform: uppercase; font-weight: 700; }
+  .card .big { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 30px; font-weight: 800;
+    letter-spacing: -0.02em; margin: 8px 0 2px; font-variant-numeric: tabular-nums; }
+  .card p { font-size: 14.5px; color: var(--ink-2); margin: 4px 0 0; line-height: 1.5; }
+  .tag.warn { color: var(--neg); } .tag.good { color: var(--pos); } .tag.neu { color: var(--accent-2); }
+
+  /* figure panels */
+  figure { margin: 26px 0 8px; background: var(--surface); border: 1px solid var(--hair);
+    border-radius: 16px; padding: 20px 20px 14px; }
+  figure .fhead { display:flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  figure figcaption { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; color: var(--ink-3);
+    margin-top: 12px; line-height: 1.5; }
+  figure h4 { font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; font-size: 16px; font-weight: 700; }
+  .legend { display:flex; gap: 14px; flex-wrap: wrap; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; }
+  .legend span { display:inline-flex; align-items:center; gap: 6px; color: var(--ink-2); }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; display:inline-block; }
+  .chart-scroll { overflow-x: auto; }
+  svg { max-width: 100%; height: auto; display: block; }
+  .btn { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12.5px; font-weight: 600;
+    color: var(--ink-2); background: var(--surface-2); border: 1px solid var(--hair); border-radius: 8px;
+    padding: 4px 10px; cursor: pointer; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  table.data { border-collapse: collapse; width: 100%; font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 13.5px; margin-top: 10px; }
+  table.data th, table.data td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--hair-2);
+    font-variant-numeric: tabular-nums; }
+  table.data th:first-child, table.data td:first-child { text-align: left; }
+  table.data thead th { color: var(--ink-3); font-weight: 600; border-bottom: 1px solid var(--hair); }
+  .hidden { display: none; }
+
+  ul.clean { padding-left: 1.15em; } ul.clean li { margin: 8px 0; }
+  .callout { border-left: 3px solid var(--accent); background: var(--surface); padding: 14px 18px;
+    border-radius: 0 12px 12px 0; margin: 20px 0; }
+  .formula { background: var(--surface); border: 1px solid var(--hair); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; font-family: ui-monospace, Menlo, monospace; font-size: 14px; color: var(--ink); }
+  footer { padding: 40px 0 70px; color: var(--ink-3); font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13.5px; }
+  footer a { color: var(--accent-2); }
+  .tip { position: fixed; pointer-events: none; z-index: 20; background: var(--tip-bg); color: var(--tip-ink);
+    font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12.5px; padding: 7px 10px; border-radius: 8px;
+    opacity: 0; transition: opacity .08s; box-shadow: 0 6px 20px rgba(0,0,0,.22); max-width: 240px; }
+  .tip b { font-variant-numeric: tabular-nums; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (max-width: 560px) { body { font-size: 17px; } section { padding: 36px 0; } }
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div style="padding:40px 0 6px">
+      <div class="eyebrow">Mechanistic interpretability · combinatorial optimization</div>
+      <h1>Safe Flow Decomposition<br>for Circuit Discovery</h1>
+      <p class="sub">Can the "certain core" of a genomics flow problem certify the mechanisms of a transformer? We build the bridge, validate the machinery, and test it on a model whose circuit is known exactly.</p>
+      <div class="meta">
+        <span class="chip">Benchmark · <b>MIB / InterpBench IOI</b></span>
+        <span class="chip">Model · <b>6L·4H SIIT transformer</b></span>
+        <span class="chip">Ground truth · <b>7-edge circuit</b></span>
+        <span class="chip">Engine validated · <b>50/50 vs brute force</b></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section>
+  <p class="lead measure">A transformer's edge-attribution graph — nodes are attention heads and MLPs, edges carry importances, source is the embedding, sink is the logits — is <em>structurally</em> the exact object <strong>Safe Flow Decomposition</strong> was built for in RNA-transcript assembly: a single-source, single-sink DAG with a scalar per edge. Safe-flow reports the subpaths present in <em>every</em> valid decomposition — the decomposition-invariant "certain core." This report asks whether that certainty transfers to circuit discovery.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="tag warn">Headline · negative</div>
+      <div class="big">len ≤ 2</div>
+      <p>Every maximal safe path degenerates to length 1–2 on the residual DAG. The safety score σ(e) collapses onto raw attribution (Spearman ≈ 0.90–0.95).</p>
+    </div>
+    <div class="card">
+      <div class="tag neu">Why</div>
+      <div class="big">all-to-all</div>
+      <p>The shared residual stream makes the graph near-complete. Enormous fan-out drains a path's excess flow within one hop — no forced multi-hop routing exists.</p>
+    </div>
+    <div class="card">
+      <div class="tag good">By-product · positive</div>
+      <div class="big">10–18×</div>
+      <p>Yet enforcing conservation is a <strong>bottleneck detector</strong>: it rescues the rank of ground-truth <em>bridge</em> edges from ~400/1108 to 22–44 — the edges attribution misses.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">01</span><h2>The object: a circuit is a flow DAG</h2></div>
+  <p class="measure">The MIB InterpBench IOI model is a 6-layer, 4-head transformer trained with <strong>Strict Interchange Intervention Training</strong>, so its circuit is known by construction. Over 32 nodes and 1108 candidate edges, the ground-truth circuit is just <strong>7 edges</strong>. Two of them — <code>input→m0</code> and <code>a4.h1→logits</code> — are <em>bridges</em>: every input→logits path in the circuit must cross them. Bottlenecks like these are exactly where flow-safety theory expects to have leverage.</p>
+
+  <figure>
+    <div class="fhead"><h4>Ground-truth IOI circuit (InterpBench)</h4>
+      <span class="legend"><span><span class="swatch" style="background:var(--accent)"></span>bridge (on every path)</span><span><span class="swatch" style="background:var(--ink-3)"></span>branch / mid-circuit</span></span>
+    </div>
+    <div class="chart-scroll" id="circuit"></div>
+    <figcaption>All 7 ground-truth edges. Flow enters at <code>input</code>, funnels through the bottleneck <code>m0</code>, fans out to three name-mover-style heads, and re-converges through <code>a4.h1</code> to the logits. The two teal edges are graph bridges.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">02</span><h2>The bridge &amp; the method</h2></div>
+  <p class="measure">Safe-flow needs a genuine non-negative <em>conserved</em> flow. Raw signed attribution is neither. The fix is a hierarchy: Integrated Gradients' <em>completeness</em> pins only the global value; <strong>Layer-wise Relevance Propagation</strong> supplies Kirchhoff conservation by construction (AttnLRP extends it through attention). Our pragmatic build takes <code>|EAP-IG|</code> and <strong>projects</strong> it onto the conservative-flow cone.</p>
+
+  <div class="formula">Safe-Circuit(G):
+  1. flow    f* = argmin<sub>f</sub> ‖f − |attr|‖²   s.t.  f ≥ 0,  f_in(v)=f_out(v)   (Dykstra projection)
+  2. safety  enumerate maximal safe paths:  P safe ⇔ excess f_P &gt; 0,   f_P = Σ f(e_i) − Σ f_out(v_i)
+  3. score   σ(e) = max<sub>P ∋ e</sub> f_P            (forced flow through a complete safe route)
+  4. select  rank by σ → MIB greedy circuit → AUROC / faithfulness</div>
+
+  <p class="measure"><span class="k">Engine validated.</span> The excess-flow test and maximal-safe-path enumeration are checked against <strong>brute-force enumeration of all unit decompositions</strong> on 50 integral flows (branch, bowtie, bottleneck, diamond, residual-skip + 45 random DAGs): the excess set equals the "in-every-decomposition" set exactly, and the projection restores conservation to ~1e-16. <strong>50/50 pass.</strong></p>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">03</span><h2>Result — the certificate degenerates</h2></div>
+  <p class="measure">On the dense residual DAG, the append rule <code>f_P' = f_P − (f_out(u) − f(u,v))</code> drives excess negative after one hop, because <code>f_out(u) ≫ f(u,v)</code> at every internal node. Across all three attribution sources, no maximal safe path exceeds length 2, and σ(e) is nearly identical to the projected flow.</p>
+
+  <figure>
+    <div class="fhead"><h4>Degeneracy diagnostics</h4></div>
+    <div class="cards" id="degen"></div>
+    <figcaption>σ↔flow Spearman and the fraction of positive-flow edges where σ(e) = f(e) exactly. The strict <code>f_P&gt;0</code> certificate reduces to ranking by projected attribution.</figcaption>
+  </figure>
+
+  <p class="measure">Consequently the primary MIB metric is flat. Over 6 bootstrap resamples of the data, the σ re-ranking is statistically indistinguishable from raw attribution (paired Δ: EAP −0.04, EAP-IG +0.01, IFR +0.06 with ±0.2 per-seed swings). Two principled repairs also fail: the min-forced-flow <em>robustness certificate</em> zeros 99% of edges (AUROC ≈ chance), and re-conserving a sparsified backbone re-densifies it.</p>
+
+  <figure>
+    <div class="fhead"><h4>InterpBench AUROC — bootstrap mean ± std (6 data subsets)</h4>
+      <button class="btn" data-toggle="auroc-tbl">Table</button></div>
+    <div class="legend" style="margin:10px 0 4px">
+      <span><span class="swatch" style="background:var(--s-raw)"></span>raw |attr|</span>
+      <span><span class="swatch" style="background:var(--s-flow)"></span>projected flow</span>
+      <span><span class="swatch" style="background:var(--s-sigma)"></span>safe-flow σ</span>
+    </div>
+    <div class="chart-scroll"><div id="auroc"></div></div>
+    <div id="auroc-tbl" class="hidden"></div>
+    <figcaption>Bars start at the 0.5 chance line. Whiskers are ±1 std. No method robustly beats raw attribution; projection helps EAP-IG and hurts EAP — conservation is not a free win globally.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">04</span><h2>Result — conservation is a bottleneck detector</h2></div>
+  <p class="measure">The degeneracy hides a robust <em>selective</em> effect. Splitting the ground-truth edges into the 2 <strong>bridges</strong> and 5 <strong>branch</strong> edges reveals what conservation does: it lifts the bridges by <strong>10–18×</strong> in rank while pushing branches down. Local attribution under-credits a bridge because its <em>marginal</em> effect is diffuse; conservation instead assigns it the full <em>forced throughput</em> it must carry.</p>
+
+  <figure>
+    <div class="fhead"><h4>Mean rank of ground-truth edges / 1108 &nbsp;·&nbsp; lower is better</h4>
+      <button class="btn" data-toggle="bridge-tbl">Table</button></div>
+    <div class="legend" style="margin:10px 0 4px">
+      <span><span class="swatch" style="background:var(--s-raw)"></span>raw |attr|</span>
+      <span><span class="swatch" style="background:var(--s-flow)"></span>projected flow</span>
+      <span><span class="swatch" style="background:var(--s-sigma)"></span>safe-flow σ</span>
+    </div>
+    <div class="chart-scroll"><div id="bridge"></div></div>
+    <div id="bridge-tbl" class="hidden"></div>
+    <figcaption>Averaged over 6 seeds. On bridges, projected flow and σ crush raw attribution (EAP: 402→22). On branches the trade-off reverses. Net AUROC cancels — but the mechanism is precisely the flow theory's prediction: forced-flow information lives on bottleneck edges.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">05</span><h2>Why genomes, not transformers</h2></div>
+  <p class="measure">Safe Flow Decomposition draws its power from <strong>bottleneck structure</strong>. An RNA splice graph chains exons with modest branching, so long stretches of flow are forced and safe paths are long and informative. The transformer computational graph is the opposite:</p>
+  <ul class="clean measure">
+    <li><strong>No forced multi-hop routing.</strong> Residual additivity connects every earlier component to every later one; <code>f_out</code> spreads over dozens of edges, so excess drains at length 1–2. Excess-flow safety measures a topological-bottleneck property the residual stream structurally eliminates.</li>
+    <li><strong>Conservation re-densifies sparsity.</strong> Any projected or thresholded backbone is undone by the conservation constraint, which reroutes mass through connecting edges.</li>
+    <li><strong>Safety ≠ necessity.</strong> Where σ is defined it certifies invariance of a chosen <em>attribution</em> flow, not the model's causal circuit. The important IOI heads live at high-fan-out hubs — exactly where σ collapses.</li>
+  </ul>
+  <div class="callout measure"><strong>The useful reframing.</strong> This is a precise negative characterization: it names the graph property (genuine bottlenecks / sparsity) a flow-safety approach to circuit discovery requires, and shows off-the-shelf residual-stream graphs lack it. The most promising direction is to apply safe-flow where the graph <em>is</em> sparse — SAE-feature circuits, QK attention-routing graphs, single-token information-flow graphs — not the dense head/MLP DAG.</div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">06</span><h2>What to take away</h2></div>
+  <ul class="clean measure">
+    <li><strong>The bridge is sound and reusable.</strong> attribution → conserved flow → path certificate is mathematically valid; its yield depends entirely on graph sparsity, which is a design knob (granularity, backbone extraction, AttnLRP two-commodity flows).</li>
+    <li><strong>Conservation as a bottleneck primitive</strong> is a concrete, cheap win: to recover a circuit's entry/exit edges that attribution under-credits, project onto the flow cone and read off the top-ranked bridges.</li>
+    <li><strong>Excess flow as a soft feature</strong>, not a binary certificate, is a legitimate order-independent structural signal even when the strict certificate degenerates.</li>
+    <li><strong>Honesty of scope.</strong> σ certifies the attribution field, not the model. The load-bearing validation is causal — ablate high-σ vs flow-matched-random edges — complementary to safety, not replaced by it.</li>
+  </ul>
+</section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Method &amp; sources.</strong> Safe-flow theory: Khan, Rizzi &amp; Tomescu, <em>Safety &amp; Completeness in Flow Decompositions for RNA Assembly</em> (RECOMB'22, arXiv:2201.10372) and <em>Optimizing Safe Flow Decompositions in DAGs</em> (ESA'22, arXiv:2102.06480). Circuits: Elhage et al. 2021; Conmy et al. 2023 (ACDC, arXiv:2304.14997); Syed, Rager &amp; Conmy 2023 (EAP, arXiv:2310.10348); Hanna et al. 2024 (EAP-IG, arXiv:2403.17806). Attribution axioms &amp; conservation: Sundararajan et al. 2017 (arXiv:1703.01365); Bach et al. 2015; Montavon et al. 2019; Achtibat et al. 2024 (AttnLRP, arXiv:2402.05602). Benchmark: Mueller et al. 2025 (MIB, arXiv:2504.13151); Gupta et al. 2024 (InterpBench, arXiv:2407.14494).</p>
+    <p>Numbers are computed from the InterpBench IOI model over 100 IOI examples with the MIB <code>logit_diff</code> / <code>s2_io_flip</code> patching protocol; AUROC and bridge ranks are means over 6 bootstrap resamples. The safe-flow engine is validated against brute-force decomposition enumeration (50/50).</p>
+  </div>
+</footer>
+
+<div class="tip" id="tip"></div>
+
+<script>
+(function () {
+  "use strict";
+  const DATA = {
+    sources: ["EAP", "EAP-IG", "IFR"],
+    auroc: {
+      "EAP":    { raw:[0.719,0.016], flow:[0.647,0.067], sigma:[0.677,0.066] },
+      "EAP-IG": { raw:[0.727,0.036], flow:[0.741,0.069], sigma:[0.734,0.066] },
+      "IFR":    { raw:[0.588,0.126], flow:[0.606,0.025], sigma:[0.647,0.044] }
+    },
+    degen: {
+      "EAP":    { spearman:0.906, collapse:0.938 },
+      "EAP-IG": { spearman:0.952, collapse:0.931 },
+      "IFR":    { spearman:0.946, collapse:0.879 }
+    },
+    bridge: {
+      "EAP":    { bridge:{raw:402,flow:33,sigma:22}, branch:{raw:251,flow:505,sigma:484} },
+      "EAP-IG": { bridge:{raw:364,flow:44,sigma:36}, branch:{raw:275,flow:382,sigma:492} }
+    }
+  };
+  const SERIES = [["raw","--s-raw","raw |attr|"],["flow","--s-flow","projected flow"],["sigma","--s-sigma","safe-flow σ"]];
+  const cv = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() ||
+                  getComputedStyle(document.body).getPropertyValue(v).trim();
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const el = (n, a) => { const e = document.createElementNS(SVGNS, n); for (const k in (a||{})) e.setAttribute(k, a[k]); return e; };
+  const tip = document.getElementById("tip");
+  function showTip(html, ev){ tip.innerHTML = html; tip.style.opacity = 1;
+    const x = ev.clientX, y = ev.clientY; tip.style.left = Math.min(x+12, innerWidth-tip.offsetWidth-8)+"px";
+    tip.style.top = (y - tip.offsetHeight - 10)+"px"; }
+  function hideTip(){ tip.style.opacity = 0; }
+
+  // ---- generic grouped bar chart ----
+  function groupedBars(mount, cfg){
+    // cfg: {groups:[{label, values:{key:val}, err?:{key:val}}], series:[[key,cssvar,name]],
+    //       yMin, yMax, ticks, fmt, unit, invertNote, W,H}
+    const W = cfg.W||720, H = cfg.H||300, m = {t:16,r:14,b:46,l:52};
+    const iw = W-m.l-m.r, ih = H-m.t-m.b;
+    const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, width:W, height:H, role:"img"});
+    const yMin = cfg.yMin, yMax = cfg.yMax;
+    const Y = v => m.t + ih*(1 - (v-yMin)/(yMax-yMin));
+    // gridlines + y ticks
+    cfg.ticks.forEach(t=>{
+      const y = Y(t);
+      svg.appendChild(el("line",{x1:m.l,y1:y,x2:W-m.r,y2:y,stroke:cv("--grid"),"stroke-width":1}));
+      const tx = el("text",{x:m.l-8,y:y+4,"text-anchor":"end",fill:cv("--ink-3"),"font-size":11,"font-family":"ui-sans-serif,system-ui,sans-serif"});
+      tx.textContent = cfg.fmt(t); svg.appendChild(tx);
+    });
+    if (cfg.chance!=null){ const y=Y(cfg.chance);
+      svg.appendChild(el("line",{x1:m.l,y1:y,x2:W-m.r,y2:y,stroke:cv("--ink-3"),"stroke-dasharray":"4 4","stroke-width":1}));
+      const t=el("text",{x:W-m.r,y:y-5,"text-anchor":"end",fill:cv("--ink-3"),"font-size":10.5,"font-family":"ui-sans-serif,system-ui,sans-serif"}); t.textContent="chance 0.5"; svg.appendChild(t);
+    }
+    const ng = cfg.groups.length, gw = iw/ng, ns = cfg.series.length;
+    const bw = Math.min(38, (gw*0.72)/ns), pad = (gw - bw*ns)/2;
+    cfg.groups.forEach((g,gi)=>{
+      const gx = m.l + gi*gw;
+      cfg.series.forEach((s,si)=>{
+        const key=s[0], col=cv(s[1]), v=g.values[key];
+        const x = gx + pad + si*bw, y0 = Y(yMin), y = Y(v);
+        const top = Math.min(y,y0), hgt = Math.abs(y0-y);
+        const r = el("rect",{x:x+2,y:top,width:bw-4,height:Math.max(1,hgt),fill:col,rx:4,ry:4});
+        r.style.cursor="pointer";
+        r.addEventListener("mousemove",ev=>showTip(`<b>${g.label} · ${s[2]}</b><br>${cfg.fmt(v)}${cfg.errText?cfg.errText(g,key):""}`,ev));
+        r.addEventListener("mouseleave",hideTip);
+        svg.appendChild(r);
+        // error whisker
+        if (g.err && g.err[key]!=null){ const e=g.err[key]; const xc=x+bw/2;
+          svg.appendChild(el("line",{x1:xc,y1:Y(v-e),x2:xc,y2:Y(v+e),stroke:cv("--ink"),"stroke-width":1.4,opacity:.65}));
+          svg.appendChild(el("line",{x1:xc-3,y1:Y(v+e),x2:xc+3,y2:Y(v+e),stroke:cv("--ink"),"stroke-width":1.4,opacity:.65}));
+          svg.appendChild(el("line",{x1:xc-3,y1:Y(v-e),x2:xc+3,y2:Y(v-e),stroke:cv("--ink"),"stroke-width":1.4,opacity:.65}));
+        }
+        // value label
+        const lab=el("text",{x:x+bw/2,y:top-6,"text-anchor":"middle",fill:cv("--ink-2"),"font-size":11,"font-weight":600,"font-family":"ui-sans-serif,system-ui,sans-serif","font-variant-numeric":"tabular-nums"});
+        lab.textContent = cfg.labelFmt? cfg.labelFmt(v) : cfg.fmt(v); svg.appendChild(lab);
+      });
+      const gl=el("text",{x:gx+gw/2,y:H-24,"text-anchor":"middle",fill:cv("--ink"),"font-size":12.5,"font-weight":700,"font-family":"ui-sans-serif,system-ui,sans-serif"});
+      gl.textContent=g.label; svg.appendChild(gl);
+      if (g.sub){ const s2=el("text",{x:gx+gw/2,y:H-9,"text-anchor":"middle",fill:cv("--ink-3"),"font-size":11,"font-family":"ui-sans-serif,system-ui,sans-serif"}); s2.textContent=g.sub; svg.appendChild(s2); }
+    });
+    mount.innerHTML=""; mount.appendChild(svg);
+  }
+
+  // ---- AUROC chart ----
+  function renderAuroc(){
+    const groups = DATA.sources.map(s=>({label:s,
+      values:{raw:DATA.auroc[s].raw[0],flow:DATA.auroc[s].flow[0],sigma:DATA.auroc[s].sigma[0]},
+      err:{raw:DATA.auroc[s].raw[1],flow:DATA.auroc[s].flow[1],sigma:DATA.auroc[s].sigma[1]}}));
+    groupedBars(document.getElementById("auroc"), {
+      groups, series:SERIES, yMin:0.5, yMax:0.85, ticks:[0.5,0.6,0.7,0.8], chance:0.5,
+      fmt:v=>v.toFixed(3), labelFmt:v=>v.toFixed(2),
+      errText:(g,k)=>` ± ${g.err[k].toFixed(3)}`, W:720, H:300 });
+  }
+  // ---- bridge chart ----
+  function renderBridge(){
+    const groups=[];
+    ["EAP","EAP-IG"].forEach(src=>{
+      groups.push({label:src, sub:"bridge", values:DATA.bridge[src].bridge});
+      groups.push({label:src, sub:"branch", values:DATA.bridge[src].branch});
+    });
+    groupedBars(document.getElementById("bridge"), {
+      groups, series:SERIES, yMin:0, yMax:560, ticks:[0,140,280,420,560],
+      fmt:v=>Math.round(v), labelFmt:v=>Math.round(v), W:720, H:320 });
+  }
+  // ---- degeneracy cards ----
+  function renderDegen(){
+    const host=document.getElementById("degen"); host.innerHTML="";
+    DATA.sources.forEach(s=>{
+      const d=DATA.degen[s];
+      const c=document.createElement("div"); c.className="card";
+      c.innerHTML=`<div class="tag neu">${s}</div>
+        <div class="big">ρ = ${d.spearman.toFixed(2)}</div>
+        <p>σ↔flow Spearman · max safe-path length <b>2</b> · σ = f on ${(d.collapse*100).toFixed(0)}% of edges</p>`;
+      host.appendChild(c);
+    });
+  }
+  // ---- circuit diagram ----
+  function renderCircuit(){
+    const W=720,H=230, nodes={
+      input:[70,150,"input"], m0:[210,150,"m0"], "a1.h1":[360,64,"a1.h1"],
+      "a2.h1":[360,150,"a2.h1"], "a4.h1":[520,150,"a4.h1"], logits:[650,150,"logits"]};
+    const edges=[["input","m0",true],["m0","a1.h1",false],["m0","a2.h1",false],
+      ["m0","a4.h1",false],["a1.h1","a2.h1",false],["a2.h1","a4.h1",false],["a4.h1","logits",true]];
+    const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,width:W,height:H,role:"img","aria-label":"ground truth circuit"});
+    const defs=el("defs"); [["mk-a",cv("--accent")],["mk-b",cv("--ink-3")]].forEach(([id,col])=>{
+      const mk=el("marker",{id,markerWidth:8,markerHeight:8,refX:7,refY:3,orient:"auto"});
+      const p=el("path",{d:"M0,0 L7,3 L0,6 Z",fill:col}); mk.appendChild(p); defs.appendChild(mk);});
+    svg.appendChild(defs);
+    edges.forEach(([a,b,br])=>{
+      const [x1,y1]=nodes[a],[x2,y2]=nodes[b];
+      const col=br?cv("--accent"):cv("--ink-3"), w=br?3:1.6;
+      const dx=(x2-x1)*0.4;
+      const path=el("path",{d:`M${x1+34},${y1} C${x1+34+dx},${y1} ${x2-34-dx},${y2} ${x2-34},${y2}`,
+        fill:"none",stroke:col,"stroke-width":w,"marker-end":`url(#${br?"mk-a":"mk-b"})`,opacity:br?1:.8});
+      svg.appendChild(path);
+    });
+    Object.values(nodes).forEach(([x,y,lab])=>{
+      const isIO = lab==="input"||lab==="logits";
+      const rw=lab.length*7.4+22;
+      const g=el("g");
+      g.appendChild(el("rect",{x:x-rw/2,y:y-16,width:rw,height:32,rx:9,
+        fill:cv("--surface"),stroke:isIO?cv("--accent"):cv("--hair"),"stroke-width":isIO?1.8:1.3}));
+      const t=el("text",{x,y:y+4,"text-anchor":"middle",fill:cv("--ink"),"font-size":13,"font-weight":isIO?700:600,"font-family":"ui-monospace,Menlo,monospace"});
+      t.textContent=lab; g.appendChild(t); svg.appendChild(g);
+    });
+    const host=document.getElementById("circuit"); host.innerHTML=""; host.appendChild(svg);
+  }
+  // ---- tables ----
+  function tableFor(kind){
+    if (kind==="auroc"){
+      let h=`<div class="chart-scroll"><table class="data"><thead><tr><th>source</th><th>raw |attr|</th><th>projected flow</th><th>safe-flow σ</th></tr></thead><tbody>`;
+      DATA.sources.forEach(s=>{const a=DATA.auroc[s];
+        h+=`<tr><td>${s}</td><td>${a.raw[0].toFixed(3)} ± ${a.raw[1].toFixed(3)}</td><td>${a.flow[0].toFixed(3)} ± ${a.flow[1].toFixed(3)}</td><td>${a.sigma[0].toFixed(3)} ± ${a.sigma[1].toFixed(3)}</td></tr>`;});
+      return h+`</tbody></table></div>`;
+    } else {
+      let h=`<div class="chart-scroll"><table class="data"><thead><tr><th>source</th><th>group</th><th>raw |attr|</th><th>projected flow</th><th>safe-flow σ</th></tr></thead><tbody>`;
+      ["EAP","EAP-IG"].forEach(s=>{["bridge","branch"].forEach(g=>{const d=DATA.bridge[s][g];
+        h+=`<tr><td>${s}</td><td>${g}</td><td>${d.raw}</td><td>${d.flow}</td><td>${d.sigma}</td></tr>`;});});
+      return h+`</tbody></table></div>`;
+    }
+  }
+  document.querySelectorAll("[data-toggle]").forEach(btn=>{
+    const id=btn.getAttribute("data-toggle"); const box=document.getElementById(id);
+    const chartId = id.replace("-tbl",""); const chart=document.getElementById(chartId).parentElement;
+    box.innerHTML = tableFor(chartId==="auroc"?"auroc":"bridge");
+    btn.addEventListener("click",()=>{
+      const showing = box.classList.toggle("hidden")===false;
+      chart.classList.toggle("hidden", showing); btn.textContent = showing?"Chart":"Table";
+    });
+  });
+
+  function renderAll(){ renderCircuit(); renderDegen(); renderAuroc(); renderBridge(); }
+  renderAll();
+  // re-render on theme change so CSS-var colors update
+  const mo = new MutationObserver(renderAll);
+  mo.observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+  if (window.matchMedia){ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll); }
+})();
+</script>

@@ -1,0 +1,10 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/venv/main/lib/python3.12/site-packages/transformer_lens/config/hooked_transformer_config.py:354: UserWarning: MPS backend may produce silently incorrect results (PyTorch 2.12.0+cu130). Set TRANSFORMERLENS_ALLOW_MPS=1 to suppress this warning. See: https://github.com/TransformerLensOrg/TransformerLens/issues/1178
+  warn_if_mps(self.device)
+Mean rank / 1108 (lower=better), mean over 6 seeds
+source           group              raw           flow          sigma
+EAP              bridge      402+/-  46      33+/-   3      22+/-   5
+EAP              branch      251+/-  31     505+/- 105     484+/- 100
+EAP-IG-inputs    bridge      364+/-  65      44+/-   6      36+/-   6
+EAP-IG-inputs    branch      275+/-  29     382+/-  87     492+/-  90
+saved -> /workspace/sfd-circuits/artifacts/results4_bridges.json

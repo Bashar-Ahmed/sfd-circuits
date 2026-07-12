@@ -1,0 +1,128 @@
+{
+  "EAP": {
+    "backbone": {
+      "0.01": {
+        "k_edges": 11,
+        "n_pos": 360,
+        "n_safe_paths": 290,
+        "len_max": 3,
+        "len_mean": 1.6448275862068966,
+        "frac_len_ge3": 0.06551724137931035,
+        "auroc": 0.44213053068638897
+      },
+      "0.02": {
+        "k_edges": 22,
+        "n_pos": 395,
+        "n_safe_paths": 368,
+        "len_max": 3,
+        "len_mean": 1.3804347826086956,
+        "frac_len_ge3": 0.04891304347826087,
+        "auroc": 0.6172310886207345
+      },
+      "0.05": {
+        "k_edges": 55,
+        "n_pos": 527,
+        "n_safe_paths": 513,
+        "len_max": 3,
+        "len_mean": 1.2514619883040936,
+        "frac_len_ge3": 0.009746588693957114,
+        "auroc": 0.7302452316076294
+      },
+      "0.1": {
+        "k_edges": 110,
+        "n_pos": 582,
+        "n_safe_paths": 570,
+        "len_max": 2,
+        "len_mean": 1.1982456140350877,
+        "frac_len_ge3": 0.0,
+        "auroc": 0.7375762294018424
+      },
+      "0.2": {
+        "k_edges": 221,
+        "n_pos": 708,
+        "n_safe_paths": 696,
+        "len_max": 2,
+        "len_mean": 1.1853448275862069,
+        "frac_len_ge3": 0.0,
+        "auroc": 0.7371220967951213
+      },
+      "0.5": {
+        "k_edges": 554,
+        "n_pos": 389,
+        "n_safe_paths": 377,
+        "len_max": 2,
+        "len_mean": 1.1591511936339522,
+        "frac_len_ge3": 0.0,
+        "auroc": 0.6810691579083951
+      }
+    },
+    "robustness": {
+      "auroc": 0.5579992214869598,
+      "frac_forced_zero": 0.9922879177377892,
+      "n_pos": 389
+    }
+  },
+  "EAP-IG-inputs": {
+    "backbone": {
+      "0.01": {
+        "k_edges": 11,
+        "n_pos": 431,
+        "n_safe_paths": 367,
+        "len_max": 3,
+        "len_mean": 1.7602179836512262,
+        "frac_len_ge3": 0.04632152588555858,
+        "auroc": 0.6589464123524069
+      },
+      "0.02": {
+        "k_edges": 22,
+        "n_pos": 495,
+        "n_safe_paths": 487,
+        "len_max": 3,
+        "len_mean": 1.4024640657084189,
+        "frac_len_ge3": 0.01642710472279261,
+        "auroc": 0.6220319190346438
+      },
+      "0.05": {
+        "k_edges": 55,
+        "n_pos": 539,
+        "n_safe_paths": 525,
+        "len_max": 2,
+        "len_mean": 1.2323809523809524,
+        "frac_len_ge3": 0.0,
+        "auroc": 0.5525496302063059
+      },
+      "0.1": {
+        "k_edges": 110,
+        "n_pos": 503,
+        "n_safe_paths": 489,
+        "len_max": 2,
+        "len_mean": 1.1226993865030674,
+        "frac_len_ge3": 0.0,
+        "auroc": 0.6302711820422993
+      },
+      "0.2": {
+        "k_edges": 221,
+        "n_pos": 722,
+        "n_safe_paths": 710,
+        "len_max": 2,
+        "len_mean": 1.080281690140845,
+        "frac_len_ge3": 0.0,
+        "auroc": 0.6298170494355781
+      },
+      "0.5": {
+        "k_edges": 554,
+        "n_pos": 379,
+        "n_safe_paths": 368,
+        "len_max": 2,
+        "len_mean": 1.0869565217391304,
+        "frac_len_ge3": 0.0,
+        "auroc": 0.6850265991955365
+      }
+    },
+    "robustness": {
+      "auroc": 0.5579992214869598,
+      "frac_forced_zero": 0.9920844327176781,
+      "n_pos": 379
+    }
+  }
+}

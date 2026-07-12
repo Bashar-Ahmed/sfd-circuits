@@ -1,0 +1,279 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/venv/main/lib/python3.12/site-packages/transformer_lens/config/hooked_transformer_config.py:354: UserWarning: MPS backend may produce silently incorrect results (PyTorch 2.12.0+cu130). Set TRANSFORMERLENS_ALLOW_MPS=1 to suppress this warning. See: https://github.com/TransformerLensOrg/TransformerLens/issues/1178
+  warn_if_mps(self.device)
+GROUND TRUTH circuit edges: ['input->m0', 'm0->a1.h1<v>', 'm0->a2.h1<v>', 'a1.h1->a2.h1<v>', 'm0->a4.h1<v>', 'a2.h1->a4.h1<v>', 'a4.h1->logits']
+
+=================== SOURCE: EAP ===================
+projection/safe diagnostics:
+    rel_residual           = 0.36840621703141446
+    conservation_err       = 3.680041861520156e-11
+    flow_value             = 0.2826294586533568
+    n_pos_edges            = 389
+    n_safe_paths           = 377
+    safe_len_max           = 2
+    safe_len_mean          = 1.1591511936339522
+    frac_len_le2           = 1.0
+    frac_len_ge3           = 0.0
+    n_on_chain_edges       = 70
+    spearman_sigma_flow    = 0.9064542550491206
+    sigma_collapse_frac    = 0.9383033419023136
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 30.96it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  raw       AUROC=0.6894  CPR=0.568 CMD=0.431  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 30.40it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  flow      AUROC=0.6194  CPR=-0.016 CMD=1.015  P@.5%=0.00 R@.5%=0.00  P@10%=0.03 R@10%=0.43
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 30.37it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  sigma     AUROC=0.6811  CPR=0.422 CMD=0.577  P@.5%=0.00 R@.5%=0.00  P@10%=0.03 R@10%=0.43
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 25.12it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  gated     AUROC=0.6065  CPR=-0.159 CMD=1.158  P@.5%=0.00 R@.5%=0.00  P@10%=0.03 R@10%=0.43
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 30.46it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  combo     AUROC=0.6822  CPR=0.455 CMD=0.544  P@.5%=0.00 R@.5%=0.00  P@10%=0.03 R@10%=0.43
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 30.77it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  lenflow   AUROC=0.6094  CPR=0.096 CMD=0.903  P@.5%=0.00 R@.5%=0.00  P@10%=0.04 R@10%=0.43
+
+=================== SOURCE: EAP-IG-inputs ===================
+projection/safe diagnostics:
+    rel_residual           = 0.3211522274085165
+    conservation_err       = 6.593058043957711e-11
+    flow_value             = 0.2937648991608971
+    n_pos_edges            = 379
+    n_safe_paths           = 368
+    safe_len_max           = 2
+    safe_len_mean          = 1.0869565217391304
+    frac_len_le2           = 1.0
+    frac_len_ge3           = 0.0
+    n_on_chain_edges       = 42
+    spearman_sigma_flow    = 0.9521028561416286
+    sigma_collapse_frac    = 0.9313984168865436
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 30.82it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  raw       AUROC=0.6440  CPR=0.551 CMD=0.448  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 25.03it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  flow      AUROC=0.5647  CPR=0.585 CMD=0.414  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 29.27it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  sigma     AUROC=0.6850  CPR=0.156 CMD=0.843  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 26.83it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  gated     AUROC=0.5649  CPR=0.634 CMD=0.365  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 31.11it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  combo     AUROC=0.5699  CPR=0.221 CMD=0.778  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 28.90it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  lenflow   AUROC=0.5594  CPR=0.612 CMD=0.387  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+
+=================== SOURCE: information-flow-routes ===================
+projection/safe diagnostics:
+    rel_residual           = 0.8696238259394634
+    conservation_err       = 3.4293956563402617e-11
+    flow_value             = 3.5732989680847442
+    n_pos_edges            = 273
+    n_safe_paths           = 264
+    safe_len_max           = 2
+    safe_len_mean          = 1.1136363636363635
+    frac_len_le2           = 1.0
+    frac_len_ge3           = 0.0
+    n_on_chain_edges       = 39
+    spearman_sigma_flow    = 0.9460279722474583
+    sigma_collapse_frac    = 0.8791208791208791
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 26.46it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  raw       AUROC=0.5000  CPR=0.250 CMD=0.749  P@.5%=0.00 R@.5%=0.00  P@10%=0.00 R@10%=0.00
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 30.29it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  flow      AUROC=0.6074  CPR=0.470 CMD=0.529  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 31.26it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  sigma     AUROC=0.6752  CPR=0.417 CMD=0.582  P@.5%=0.00 R@.5%=0.00  P@10%=0.03 R@10%=0.43
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 31.38it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  gated     AUROC=0.6030  CPR=0.440 CMD=0.559  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 28.23it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  combo     AUROC=0.6763  CPR=0.309 CMD=0.690  P@.5%=0.00 R@.5%=0.00  P@10%=0.03 R@10%=0.43
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 31.26it/s]
+Computing results for 0.1% of edges (N=1)
+Computing results for 0.2% of edges (N=2)
+Computing results for 0.5% of edges (N=5)
+Computing results for 1.0% of edges (N=11)
+Computing results for 2.0% of edges (N=22)
+Computing results for 5.0% of edges (N=55)
+Computing results for 10.0% of edges (N=110)
+Computing results for 20.0% of edges (N=221)
+Computing results for 50.0% of edges (N=554)
+Computing results for 100% of edges (N=1108)
+  lenflow   AUROC=0.6031  CPR=0.440 CMD=0.559  P@.5%=0.00 R@.5%=0.00  P@10%=0.02 R@10%=0.29
+
+
+================= AUROC SUMMARY =================
+source                        raw     flow    sigma    gated    combo  lenflow
+EAP                        0.6894   0.6194   0.6811   0.6065   0.6822   0.6094
+EAP-IG-inputs              0.6440   0.5647   0.6850   0.5649   0.5699   0.5594
+information-flow-routes    0.5000   0.6074   0.6752   0.6030   0.6763   0.6031
+
+================= CPR (faithfulness area, higher=better) =================
+EAP                         0.568   -0.016    0.422   -0.159    0.455    0.096
+EAP-IG-inputs               0.551    0.585    0.156    0.634    0.221    0.612
+information-flow-routes     0.250    0.470    0.417    0.440    0.309    0.440
+
+saved -> /workspace/sfd-circuits/artifacts/results.json   (total 67.5s)
